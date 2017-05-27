@@ -1,5 +1,7 @@
 package tk.avabin.genetic
 
+import tk.avabin.genetic.ga.Move
+
 import scala.util.Random
 
 /**

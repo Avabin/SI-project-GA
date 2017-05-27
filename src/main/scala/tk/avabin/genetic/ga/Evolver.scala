@@ -1,4 +1,6 @@
-package tk.avabin.genetic
+package tk.avabin.genetic.ga
+
+import tk.avabin.genetic.Util
 
 import scala.util.control.Breaks._
 

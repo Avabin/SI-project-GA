@@ -1,7 +1,9 @@
-package tk.avabin.genetic
+package tk.avabin.genetic.ga
+
+import tk.avabin.genetic.Util
 
 class Evaluator(val target: Target) {
-  var solutionBytes: Array[Byte] = _
+  var solutionMoves: Array[Move] = _
 
   /**
    * Return the fittest organism in a population

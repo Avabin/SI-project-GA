@@ -2,6 +2,8 @@ package tk.avabin.genetic
 
 import java.util.concurrent.Callable
 
+import tk.avabin.genetic.ga.{Individual, Move}
+
 
 /**
   * @author avabin

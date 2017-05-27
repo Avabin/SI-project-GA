@@ -1,4 +1,4 @@
-package tk.avabin.genetic
+package tk.avabin.genetic.ga
 
 /**
   * @author Avabin

@@ -1,4 +1,4 @@
-package tk.avabin.genetic
+package tk.avabin.genetic.ga
 
 class Individual(var chromosome: Array[Move], val point: Point = new Point(), val distancePerMove: Double = 1.0) {
   var finalMoveIndex = 0
@@ -30,15 +30,15 @@ class Individual(var chromosome: Array[Move], val point: Point = new Point(), va
   }
 
   def moveUp(): Unit = {
-    this.point.y += distancePerMove
+    this.point.yInc(distancePerMove)
   }
   def moveDown(): Unit = {
-    this.point.y -= distancePerMove
+    this.point.yDec(distancePerMove)
   }
   def moveRight(): Unit = {
-    this.point.x += distancePerMove
+    this.point.xInc(distancePerMove)
   }
   def moveLeft(): Unit = {
-    this.point.x -= distancePerMove
+    this.point.xDec(distancePerMove)
   }
 }

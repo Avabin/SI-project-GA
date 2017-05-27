@@ -1,6 +1,8 @@
-package tk.avabin.genetic
+package tk.avabin.genetic.ga
 
-import util.Random
+import tk.avabin.genetic.MoveGenerator
+
+import scala.util.Random
 
 class Population(val populationSize: Integer, val chromosomeSize: Int, mutationRate: Double, crossoverRate: Double, distancePerMove: Double) {
   var pop: Array[Individual] = _
