@@ -24,7 +24,7 @@ class Evolver {
       val fittest = evaluator.fittest(pop)
       val fitness = evaluator.fitness(fittest)
 
-      println("generation: %4d fitness: %2.2f chromosome: %s ".format(generation, fitness, fittest))
+      println("generation: %4d | best distance %3.4f | fitness: %2.5f | chromosome: %s ".format( generation, Util.calculateDistance(fittest.point, evaluator.target.point), fitness, fittest))
 
       if (generation >= generations)
         fittest

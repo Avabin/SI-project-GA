@@ -2,7 +2,7 @@ package tk.avabin.genetic
 
 import util.Random
 
-class Population(val populationSize: Integer, val chromosomeSize: Int, mutationRate: Double, crossoverRate: Double) {
+class Population(val populationSize: Integer, val chromosomeSize: Int, mutationRate: Double, crossoverRate: Double, distancePerMove: Double) {
   var pop: Array[Individual] = _
 
 
@@ -27,7 +27,7 @@ class Population(val populationSize: Integer, val chromosomeSize: Int, mutationR
         moves(j) = MoveGenerator.next()
       }
 
-      val individual = new Individual(moves)
+      val individual = new Individual(moves, distancePerMove = distancePerMove)
       pop(i) = individual
     }
   }
@@ -65,7 +65,7 @@ class Population(val populationSize: Integer, val chromosomeSize: Int, mutationR
    * @param evaluator The evaluator to use
    */
   def evolve(elitist: Boolean, evaluator: Evaluator): Population = {
-    val nextGeneration = new Population(pop.length, chromosomeSize, mutationRate, crossoverRate)
+    val nextGeneration = new Population(pop.length, chromosomeSize, mutationRate, crossoverRate, distancePerMove)
     nextGeneration.initialise()
 
     var offset = 0
@@ -130,7 +130,7 @@ class Population(val populationSize: Integer, val chromosomeSize: Int, mutationR
   def select(evaluator: Evaluator): Individual = {
     val numberOfRounds = 10
 
-    val tournament = new Population(numberOfRounds, chromosomeSize, mutationRate, crossoverRate)
+    val tournament = new Population(numberOfRounds, chromosomeSize, mutationRate, crossoverRate, distancePerMove)
     tournament.initialise()
 
     for (i <- 0 to numberOfRounds) {
