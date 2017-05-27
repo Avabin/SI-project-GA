@@ -4,8 +4,11 @@ import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
+import scalafx.scene.canvas.Canvas
 import scalafx.scene.control.{Label, TextField}
-import scalafx.scene.layout.{GridPane, HBox, VBox}
+import scalafx.scene.layout.{GridPane, HBox, StackPane, VBox}
+import scalafx.scene.paint.Color
+import scalafx.scene.shape.Rectangle
 
 /**
   * @author avabin
@@ -77,8 +80,11 @@ object PathFinderApp extends JFXApp{
             controlInputs
           )
         }
-
-        children = controlBox
+          val canvas = new Canvas(new javafx.scene.canvas.Canvas(400, 400)) {
+            graphicsContext2D.fillRect(0, 0, this.width.value, this.height.value)
+          }
+        add(controlBox, 0, 0)
+        add(canvas, 1, 0)
       }
     }
   }
