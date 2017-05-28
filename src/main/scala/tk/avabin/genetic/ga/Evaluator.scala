@@ -26,6 +26,6 @@ class Evaluator(val target: Target) {
   */
   def fitness(individual: Individual): Double = {
     if(individual.isInTarget) return (1 / (Util.calculateDistance(individual.point, target.point) + individual.finalMoveIndex)) * 1.5
-    (1 / (Util.calculateDistance(individual.point, target.point)+ individual.finalMoveIndex)) * 0.1
+    (1 / ((Util.calculateDistance(individual.point, target.point) * 1.3) + individual.finalMoveIndex)) * 0.1
   }
 }

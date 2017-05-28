@@ -24,6 +24,7 @@ object PathFinderApp extends JFXApp{
   var runnerTask: GARunnerTask = _
   val version = 0.1
   stage = new PrimaryStage {
+    resizable = false
     width = 875
     height = 705
     scene = new Scene() {
@@ -36,10 +37,10 @@ object PathFinderApp extends JFXApp{
           val generationNumberLabel: Label = new Label("Number of generations (35)")
           val generationNumberInput: TextField = new GenericTextField()
 
-          val chromosomeSizeLabel: Label = new Label("Chromosome size (300)")
+          val chromosomeSizeLabel: Label = new Label("Chromosome size (2000)")
           val chromosomeSizeInput: TextField = new GenericTextField()
 
-          val popSizeLabel: Label = new Label("Population size (35)")
+          val popSizeLabel: Label = new Label("Population size (120)")
           val popSizeInput: TextField = new GenericTextField()
 
           val mutationRateLabel: Label = new Label("Mutation rate (0.015)")
@@ -48,15 +49,15 @@ object PathFinderApp extends JFXApp{
           val crossRateLabel: Label = new Label("Crossover rate (0.5)")
           val crossRateInput: TextField = new GenericTextField()
 
-          val delayLabel: Label = new Label("Delay (10ms)")
+          val delayLabel: Label = new Label("Delay (3ms)")
           val delayInput: TextField = new GenericTextField()
 
-          val numOfObstaclesLabel: Label = new Label("Obstacles (3)")
+          val numOfObstaclesLabel: Label = new Label("Obstacles (8)")
           val numOfObstaclesInput: TextField = new GenericTextField()
 
           val targetXInput = new GenericTextField(90)
           val targetYInput = new GenericTextField(90)
-          val targetLabel = new Label("Target coordinates (125, 125)")
+          val targetLabel = new Label("Target coordinates (300, 300)")
           val targetInputBox = new HBox() {
             alignment = Pos.BottomCenter
             children = Seq(
@@ -85,14 +86,14 @@ object PathFinderApp extends JFXApp{
 
             startB.onMouseClicked = (_) => {
               var genSize = 40
-              var chroSize = 50
-              var popSize = 20
+              var chroSize = 2000
+              var popSize = 120
               var mutRate: Double = 5/chroSize
               var crossRate: Double = 0.5
               var targetX, targetY: Double = 300
               var startX, startY: Double = 0
-              var obstacles = 3
-              var d: Int = 10
+              var obstacles = 8
+              var d: Int = 3
 
               generationNumberInput.text() match{
                 case "" =>
@@ -191,9 +192,9 @@ object PathFinderApp extends JFXApp{
             targetInputBox,
             startLabel,
             startInputBox,
-            controlInputs,
             numOfObstaclesLabel,
-            numOfObstaclesInput
+            numOfObstaclesInput,
+            controlInputs
           )
         }
           val canvas = new Canvas() {

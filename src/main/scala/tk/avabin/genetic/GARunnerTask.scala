@@ -42,7 +42,8 @@ class GARunnerTask extends Thread {
           for (i <- 0 until individuals.length - 1) {
             val individual = individuals(i)
             individual.colliders = colliders
-            individuals(i).applyNextMove()
+            if (!individual.collided)
+              individual.applyNextMove()
         }
       }
     val fittest = eval.fittest(population)
