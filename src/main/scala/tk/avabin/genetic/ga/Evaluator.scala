@@ -3,7 +3,6 @@ package tk.avabin.genetic.ga
 import tk.avabin.genetic.Util
 
 class Evaluator(val target: Target) {
-  var solutionMoves: Array[Move] = _
 
   /**
    * Return the fittest organism in a population
@@ -11,7 +10,7 @@ class Evaluator(val target: Target) {
   def fittest(population: Population): Individual = {
     var o: Individual = population.pop(0)
 
-    for (i <- 1 to population.size - 2) {
+    for (i <- 1 until population.size - 1) {
       val nextIndividual = population.pop(i)
 
       if (fitness(nextIndividual) > fitness(o)) {
@@ -26,6 +25,6 @@ class Evaluator(val target: Target) {
   * Calculate an organism's fitness by comparing it to the optimal solution
   */
   def fitness(individual: Individual): Double = {
-    1.0 / Util.calculateDistance(individual.point, target.point)
+    1 / Util.calculateDistance(individual.point, target.point)
   }
 }

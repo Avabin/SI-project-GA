@@ -5,8 +5,10 @@ import scalafx.scene.shape.{Circle, Shape}
 /**
   * @author Avabin
   */
-class Target(val point: Point = new Point(), val radius: Double = 40) extends Drawable{
-  def this(x:Double, y:Double) = this(new Point())
+class Target(val point: Point, val radius: Double) extends Drawable{
+  def this(x:Double, y:Double) = this(new Point(x, y), 25)
+  def this(x:Double, y:Double, r:Double) = this(new Point(x, y), r)
+
   def isPointIn(targetPoint: Point): Boolean = {
     val dx = math.abs(targetPoint.x - point.x)
     if (dx > radius) return false
@@ -21,10 +23,10 @@ class Target(val point: Point = new Point(), val radius: Double = 40) extends Dr
   override val shape: String = "circle"
 
   override def getAsShape(): Shape = {
-    new Circle(){
-      centerX <== point.xProperty
-      centerY <== point.yProperty
-      radius = getRadius
+    new Circle() {
+      centerX = point.x
+      centerY = point.y
+      radius = width
     }
   }
 

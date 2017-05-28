@@ -15,16 +15,16 @@ object Util {
 
   def individual2circle(individual: Individual, r: Double): Circle = {
     new Circle() {
-      centerX <== individual.point.xProperty
-      centerY <== individual.point.yProperty
+      centerX = individual.point.x
+      centerY = individual.point.y
       radius = r
     }
   }
 
   def target2circle(target: Target, r: Double): Circle = {
     new Circle() {
-      centerX <== target.point.xProperty
-      centerY <== target.point.yProperty
+      centerX = target.point.x
+      centerY = target.point.y
       radius = r
     }
   }

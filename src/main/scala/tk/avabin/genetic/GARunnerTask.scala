@@ -16,20 +16,27 @@ class GARunnerTask extends Thread {
   var generation = 1
   var solution: Individual = _
   var solutionFitness:Double = 0
+  var running = true
 
   def init(): Unit = {
     population.populate()
+  }
+
+  def pause(): Unit = {
+    running = false
   }
 
   def nextRound(): Unit = {
     val individuals = population.pop
     Drawer.clearBuffer()
     Drawer.addDrawable(eval.target)
-    for (i <- 0 until individuals.length - 2)
+    for(i <- 0 until individuals.length - 1) {
       Drawer.addDrawable(individuals(i))
+    }
     for (_ <- individuals(0).genes.indices) {
+      Thread.sleep(delay)
       breakable {
-        for (i <- 0 until individuals.length - 2) {
+        for (i <- 0 until individuals.length - 1) {
           val individual = individuals(i)
           if (eval.target.isPointIn(individual.point)) {
             break
@@ -56,9 +63,10 @@ class GARunnerTask extends Thread {
   override def run(): Unit = {
 
     while(generation <= generations) {
-      Thread.sleep(delay)
-      nextRound()
-      generation += 1
+      while(running) {
+        nextRound()
+        generation += 1
+      }
     }
   }
 }

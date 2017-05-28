@@ -21,6 +21,7 @@ import scalafx.scene.shape.Circle
   * @author avabin
   */
 object PathFinderApp extends JFXApp{
+  var runnerTask: GARunnerTask = _
   val version = 0.1
   stage = new PrimaryStage {
     width = 875
@@ -46,6 +47,9 @@ object PathFinderApp extends JFXApp{
 
           val crossRateLabel: Label = new Label("Crossover rate (0.5)")
           val crossRateInput: TextField = new GenericTextField()
+
+          val delayLabel: Label = new Label("Delay (10ms)")
+          val delayInput: TextField = new GenericTextField()
 
           val targetXInput = new GenericTextField(90)
           val targetYInput = new GenericTextField(90)
@@ -74,16 +78,18 @@ object PathFinderApp extends JFXApp{
             alignment = Pos.BottomCenter
             val startB = new GenericButton(text = "Start")
             val pauseB = new GenericButton(text = "Pause")
-            val stopB = new GenericButton(text = "Stop")
+            val resetB = new GenericButton(text = "Reset")
 
             startB.onMouseClicked = (_) => {
+              this.disable = true
               var genSize = 40
               var chroSize = 50
               var popSize = 20
               var mutRate: Double = 5/chroSize
               var crossRate: Double = 0.5
-              var targetX, targetY: Double = 125
+              var targetX, targetY: Double = 300
               var startX, startY: Double = 0
+              var d: Int = 10
 
               generationNumberInput.text() match{
                 case "" => genSize = 40
@@ -126,13 +132,18 @@ object PathFinderApp extends JFXApp{
                 case other => startY = other.toDouble
               }
 
-              var target: Target = new Target(targetX, targetY)
+              delayInput.text() match {
+                case "" =>
+                case other => d = other.toInt
+              }
+
+              var target: Target = new Target(targetX, targetY, 35)
               var start = new Point(startX, startY)
-              var pop = new  Population(popSize, chroSize, mutRate, crossRate, distancePerMove = 10, start)
+              var pop = new Population(popSize, chroSize, mutRate, crossRate, distancePerMove = 5, start.copy())
               var evaluator = new Evaluator(target)
 
               var runnerTask: GARunnerTask = new GARunnerTask() {
-                delay = 1000
+                delay = d
                 population = pop
                 eval = evaluator
                 generations = genSize
@@ -140,15 +151,17 @@ object PathFinderApp extends JFXApp{
 
               runnerTask.init()
               runnerTask.start()
-
-
             }
 
+            pauseB.onMouseClicked = (_) => {
+              runnerTask.pause()
+              startB.disable = false
+            }
 
             children = Seq(
               startB,
               pauseB,
-              stopB
+              resetB
             )
           }
 
@@ -164,6 +177,8 @@ object PathFinderApp extends JFXApp{
             mutationRateInput,
             crossRateLabel,
             crossRateInput,
+            delayLabel,
+            delayInput,
             targetLabel,
             targetInputBox,
             startLabel,

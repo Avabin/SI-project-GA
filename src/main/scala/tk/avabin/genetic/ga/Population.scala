@@ -29,7 +29,7 @@ class Population(val populationSize: Integer, val chromosomeSize: Int, mutationR
         moves(j) = MoveGenerator.next()
       }
 
-      val individual = new Individual(moves, startPoint, distancePerMove)
+      val individual = new Individual(moves, startPoint.copy(), distancePerMove)
       pop(i) = individual
     }
   }
@@ -102,7 +102,7 @@ class Population(val populationSize: Integer, val chromosomeSize: Int, mutationR
       }
     }
 
-    new Individual(c, startPoint, distancePerMove)
+    new Individual(c, startPoint.copy(), distancePerMove)
   }
 
   /**
@@ -123,7 +123,7 @@ class Population(val populationSize: Integer, val chromosomeSize: Int, mutationR
       index += 1
     }
 
-    new Individual(chromosomes, startPoint, distancePerMove)
+    new Individual(chromosomes, startPoint.copy(), distancePerMove)
   }
 
   /**
@@ -132,7 +132,7 @@ class Population(val populationSize: Integer, val chromosomeSize: Int, mutationR
   def select(evaluator: Evaluator): Individual = {
     val numberOfRounds = 10
 
-    val tournament = new Population(numberOfRounds, chromosomeSize, mutationRate, crossoverRate, distancePerMove, startPoint)
+    val tournament = new Population(numberOfRounds, chromosomeSize, mutationRate, crossoverRate, distancePerMove, startPoint.copy())
     tournament.initialise()
 
     for (i <- 0 to numberOfRounds) {
