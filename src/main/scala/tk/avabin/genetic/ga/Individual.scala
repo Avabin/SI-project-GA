@@ -51,8 +51,8 @@ extends Drawable{
 
   override def getAsShape(): Shape = {
     new Circle() {
-      centerX = point.x
-      centerY = point.y
+      centerX = x
+      centerY = point.y - height / 2
       radius = width
     }
   }

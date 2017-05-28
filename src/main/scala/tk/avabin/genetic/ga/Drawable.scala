@@ -14,6 +14,9 @@ trait Drawable {
   val strokePaint: Paint
   val shape: String
 
-  def getAsShape(): Shape
+  def x: Double = point.x - width / 2
+  def y: Double = point.y - height / 2
+
+  def getAsShape: Shape
 
 }

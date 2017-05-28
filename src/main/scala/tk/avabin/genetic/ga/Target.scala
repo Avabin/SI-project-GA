@@ -11,10 +11,7 @@ class Target(val point: Point, val radius: Double) extends Drawable{
 
   def isPointIn(targetPoint: Point): Boolean = {
     val dx = math.abs(targetPoint.x - point.x)
-    if (dx > radius) return false
     val dy = math.abs(targetPoint.y - point.y)
-    if (dy > radius) return false
-    if (dx + dy <= radius) return true
      dx * dx + dy * dy <= radius * radius
   }
 
@@ -24,8 +21,8 @@ class Target(val point: Point, val radius: Double) extends Drawable{
 
   override def getAsShape(): Shape = {
     new Circle() {
-      centerX = point.x
-      centerY = point.y
+      centerX = point.x - width / 2
+      centerY = point.y - height / 2
       radius = width
     }
   }

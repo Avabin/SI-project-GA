@@ -81,7 +81,6 @@ object PathFinderApp extends JFXApp{
             val resetB = new GenericButton(text = "Reset")
 
             startB.onMouseClicked = (_) => {
-              this.disable = true
               var genSize = 40
               var chroSize = 50
               var popSize = 20
@@ -142,7 +141,7 @@ object PathFinderApp extends JFXApp{
               var pop = new Population(popSize, chroSize, mutRate, crossRate, distancePerMove = 5, start.copy())
               var evaluator = new Evaluator(target)
 
-              var runnerTask: GARunnerTask = new GARunnerTask() {
+              runnerTask = new GARunnerTask() {
                 delay = d
                 population = pop
                 eval = evaluator
@@ -155,7 +154,6 @@ object PathFinderApp extends JFXApp{
 
             pauseB.onMouseClicked = (_) => {
               runnerTask.pause()
-              startB.disable = false
             }
 
             children = Seq(

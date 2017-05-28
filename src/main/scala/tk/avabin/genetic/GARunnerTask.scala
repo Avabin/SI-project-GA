@@ -53,7 +53,7 @@ class GARunnerTask extends Thread {
       solution = fittest
     }
 
-    println("generation: %4d | best distance %3.4f | fitness: %2.5f | chromosome: %s ".format( generation, Util.calculateDistance(fittest.point, eval.target.point), fitness, fittest))
+    println("generation: %4d | best distance %3.4f | fitness: %2.5f | chromosome: %s ".format(generation, Util.calculateDistance(fittest.point, eval.target.point), fitness, fittest))
 
     population = population.evolve(elitist = true, eval)
 
