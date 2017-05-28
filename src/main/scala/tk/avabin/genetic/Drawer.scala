@@ -31,11 +31,11 @@ object Drawer {
     gc fill = d.fillPaint
     d.shape match {
       case "circle" =>
-        gc.strokeOval(d.point.x, d.point.y, d.width, d.height)
-        gc.fillOval(d.point.x, d.point.y, d.width, d.height)
+        gc.strokeOval(d.point.xProperty(), d.point.yProperty(), d.width, d.height)
+        gc.fillOval(d.point.xProperty(), d.point.yProperty(), d.width, d.height)
       case "rectangle" =>
-        gc.strokeRect(d.point.x, d.point.y, d.width, d.height)
-        gc.fillRect(d.point.x, d.point.y, d.width, d.height)
+        gc.strokeRect(d.point.xProperty(), d.point.yProperty(), d.width, d.height)
+        gc.fillRect(d.point.xProperty(), d.point.yProperty(), d.width, d.height)
     }
   }
 

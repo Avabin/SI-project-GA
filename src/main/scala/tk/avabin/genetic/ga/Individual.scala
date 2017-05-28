@@ -2,7 +2,7 @@ package tk.avabin.genetic.ga
 import scalafx.scene.paint.{Color, Paint}
 import scalafx.scene.shape.{Circle, Shape}
 
-class Individual(var chromosome: Array[Move], val point: Point = new Point(), val distancePerMove: Double = 1.0)
+class Individual(var chromosome: Array[Move], val point: Point = new Point(), val distancePerMove: Double)
 extends Drawable{
   var moveIndex = 0
   def genes: Array[Move] = chromosome
@@ -50,12 +50,12 @@ extends Drawable{
 
   override def getAsShape(): Shape = {
     new Circle() {
-      centerX = point.x
-      centerY = point.y
-      radius = 15
+      centerX <== point.xProperty
+      centerY <== point.yProperty
+      radius = width
     }
   }
 
-  override val width: Double = 15
-  override val height: Double = 15
+  override val width: Double = 10
+  override val height: Double = 10
 }

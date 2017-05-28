@@ -1,6 +1,6 @@
 package tk.avabin.genetic
 
-import tk.avabin.genetic.ga.{Individual, Move, Point}
+import tk.avabin.genetic.ga._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.language.postfixOps
@@ -60,13 +60,13 @@ object PathFinderApp extends JFXApp{
 
 
           val startXInput = new GenericTextField(90)
-          val StartYInput = new GenericTextField(90)
+          val startYInput = new GenericTextField(90)
           val startLabel = new Label("Start point (0, 0)")
           val startInputBox = new HBox() {
             alignment = Pos.BottomCenter
             children = Seq(
               startXInput,
-              StartYInput
+              startYInput
             )
           }
 
@@ -77,8 +77,72 @@ object PathFinderApp extends JFXApp{
             val stopB = new GenericButton(text = "Stop")
 
             startB.onMouseClicked = (_) => {
+              var genSize = 40
+              var chroSize = 50
+              var popSize = 20
+              var mutRate: Double = 5/chroSize
+              var crossRate: Double = 0.5
+              var targetX, targetY: Double = 125
+              var startX, startY: Double = 0
 
+              generationNumberInput.text() match{
+                case "" => genSize = 40
+                case other => genSize = other.toInt
               }
+              chromosomeSizeInput.text() match{
+                case "" =>
+                case other => chroSize = other.toInt
+              }
+
+              popSizeInput.text() match{
+                case "" =>
+                case other => popSize = other.toInt
+              }
+
+              mutationRateInput.text() match{
+                case "" =>
+                case other => mutRate = other.toDouble
+              }
+              crossRateInput.text() match{
+                case "" =>
+                case other => crossRate = other.toDouble
+              }
+
+              targetXInput.text() match {
+                case "" =>
+                case other => targetX = other.toDouble
+              }
+
+              targetYInput.text() match {
+                case "" =>
+                case other => targetY = other.toDouble
+              }
+              startXInput.text() match {
+                case "" =>
+                case other => startX = other.toDouble
+              }
+              startYInput.text() match {
+                case "" =>
+                case other => startY = other.toDouble
+              }
+
+              var target: Target = new Target(targetX, targetY)
+              var start = new Point(startX, startY)
+              var pop = new  Population(popSize, chroSize, mutRate, crossRate, distancePerMove = 10, start)
+              var evaluator = new Evaluator(target)
+
+              var runnerTask: GARunnerTask = new GARunnerTask() {
+                delay = 1000
+                population = pop
+                eval = evaluator
+                generations = genSize
+              }
+
+              runnerTask.init()
+              runnerTask.start()
+
+
+            }
 
 
             children = Seq(

@@ -4,7 +4,7 @@ import tk.avabin.genetic.MoveGenerator
 
 import scala.util.Random
 
-class Population(val populationSize: Integer, val chromosomeSize: Int, mutationRate: Double, crossoverRate: Double, distancePerMove: Double) {
+class Population(val populationSize: Integer, val chromosomeSize: Int, mutationRate: Double, crossoverRate: Double, distancePerMove: Double, startPoint: Point) {
   var pop: Array[Individual] = _
 
 
@@ -29,7 +29,7 @@ class Population(val populationSize: Integer, val chromosomeSize: Int, mutationR
         moves(j) = MoveGenerator.next()
       }
 
-      val individual = new Individual(moves, distancePerMove = distancePerMove)
+      val individual = new Individual(moves, startPoint, distancePerMove)
       pop(i) = individual
     }
   }
@@ -57,8 +57,8 @@ class Population(val populationSize: Integer, val chromosomeSize: Int, mutationR
   /**
    * Add an organism to a particular location in a population
    */
-  def addOrganism(index: Int, organism: Individual): Unit = {
-    pop(index) = organism
+  def addIndividual(index: Int, individual: Individual): Unit = {
+    pop(index) = individual
   }
 
   /**
@@ -67,14 +67,14 @@ class Population(val populationSize: Integer, val chromosomeSize: Int, mutationR
    * @param evaluator The evaluator to use
    */
   def evolve(elitist: Boolean, evaluator: Evaluator): Population = {
-    val nextGeneration = new Population(pop.length, chromosomeSize, mutationRate, crossoverRate, distancePerMove)
+    val nextGeneration = new Population(pop.length, chromosomeSize, mutationRate, crossoverRate, distancePerMove, startPoint)
     nextGeneration.initialise()
 
     var offset = 0
 
     if (elitist) {
-      val eliteOrganism = evaluator.fittest(this)
-      nextGeneration.addOrganism(0, mutate(eliteOrganism))
+      val elite = evaluator.fittest(this)
+      nextGeneration.addIndividual(0, mutate(elite))
       offset += 1
     }
 
@@ -83,7 +83,7 @@ class Population(val populationSize: Integer, val chromosomeSize: Int, mutationR
       val parent2: Individual = select(evaluator)
       val child: Individual = crossover(parent1, parent2)
 
-      nextGeneration.addOrganism(index, mutate(child))
+      nextGeneration.addIndividual(index, mutate(child))
     }
 
     nextGeneration
@@ -102,7 +102,7 @@ class Population(val populationSize: Integer, val chromosomeSize: Int, mutationR
       }
     }
 
-    new Individual(c)
+    new Individual(c, startPoint, distancePerMove)
   }
 
   /**
@@ -123,7 +123,7 @@ class Population(val populationSize: Integer, val chromosomeSize: Int, mutationR
       index += 1
     }
 
-    new Individual(chromosomes)
+    new Individual(chromosomes, startPoint, distancePerMove)
   }
 
   /**
@@ -132,12 +132,12 @@ class Population(val populationSize: Integer, val chromosomeSize: Int, mutationR
   def select(evaluator: Evaluator): Individual = {
     val numberOfRounds = 10
 
-    val tournament = new Population(numberOfRounds, chromosomeSize, mutationRate, crossoverRate, distancePerMove)
+    val tournament = new Population(numberOfRounds, chromosomeSize, mutationRate, crossoverRate, distancePerMove, startPoint)
     tournament.initialise()
 
     for (i <- 0 to numberOfRounds) {
-      val randomOrganism = pop(Random.nextInt(populationSize))
-      tournament.addOrganism(i, randomOrganism)
+      val randomIndividual = pop(Random.nextInt(populationSize))
+      tournament.addIndividual(i, randomIndividual)
     }
 
     evaluator.fittest(tournament)
