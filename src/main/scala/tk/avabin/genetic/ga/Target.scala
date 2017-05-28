@@ -1,6 +1,6 @@
 package tk.avabin.genetic.ga
 import scalafx.scene.paint.{Color, Paint}
-import scalafx.scene.shape.{Circle, Shape}
+import scalafx.scene.shape.{Circle, Rectangle, Shape}
 
 /**
   * @author Avabin
@@ -17,14 +17,10 @@ class Target(val point: Point, val radius: Double) extends Drawable{
 
   override val fillPaint: Paint = Color.Blue
   override val strokePaint: Paint = Color.Black
-  override val shape: String = "circle"
+  override val shape: String = "rectangle"
 
   override def getAsShape(): Shape = {
-    new Circle() {
-      centerX = x
-      centerY = y
-      radius = width
-    }
+    new Rectangle(new javafx.scene.shape.Rectangle(x, y, width, height))
   }
 
   def getRadius: Double = radius
