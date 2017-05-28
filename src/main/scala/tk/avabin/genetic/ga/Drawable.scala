@@ -14,9 +14,11 @@ trait Drawable {
   val strokePaint: Paint
   val shape: String
 
-  def x: Double = point.x - width / 2
-  def y: Double = point.y - height / 2
+  def x: Double = point.x
+  def y: Double = point.y
 
   def getAsShape: Shape
+
+  def isCollision(drawable: Drawable): Boolean = {drawable.getAsShape.intersects(this.getAsShape.getBoundsInLocal)}
 
 }

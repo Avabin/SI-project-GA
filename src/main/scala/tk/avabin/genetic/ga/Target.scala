@@ -21,8 +21,8 @@ class Target(val point: Point, val radius: Double) extends Drawable{
 
   override def getAsShape(): Shape = {
     new Circle() {
-      centerX = point.x - width / 2
-      centerY = point.y - height / 2
+      centerX = x
+      centerY = y
       radius = width
     }
   }
