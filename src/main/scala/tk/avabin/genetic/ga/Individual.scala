@@ -1,16 +1,11 @@
 package tk.avabin.genetic.ga
+import scalafx.scene.paint.{Color, Paint}
+import scalafx.scene.shape.{Circle, Shape}
 
-class Individual(var chromosome: Array[Move], val point: Point = new Point(), val distancePerMove: Double = 1.0) {
-  var finalMoveIndex = 0
+class Individual(var chromosome: Array[Move], val point: Point = new Point(), val distancePerMove: Double = 1.0)
+extends Drawable{
+  var moveIndex = 0
   def genes: Array[Move] = chromosome
-  def noteMove(index: Int): Unit = {
-    finalMoveIndex = index
-      val newarray = new Array[Move](finalMoveIndex)
-      for(j <- newarray.indices) {
-        newarray(j) = chromosome(j)
-      }
-    chromosome = newarray
-  }
 
   override def toString: String = {
     val sb: StringBuilder = new StringBuilder
@@ -18,6 +13,13 @@ class Individual(var chromosome: Array[Move], val point: Point = new Point(), va
       sb.append(gene)
     }
     sb.toString
+  }
+
+  def applyNextMove(): Boolean = {
+    if(moveIndex == chromosome.length) return false
+    applyMove(chromosome(moveIndex))
+    moveIndex += 1
+    true
   }
 
   def applyMove(move: Move): Unit = {
@@ -41,4 +43,19 @@ class Individual(var chromosome: Array[Move], val point: Point = new Point(), va
   def moveLeft(): Unit = {
     this.point.xDec(distancePerMove)
   }
+
+  override val fillPaint: Paint = Color.DarkRed
+  override val strokePaint: Paint = Color.Black
+  override val shape: String = "circle"
+
+  override def getAsShape(): Shape = {
+    new Circle() {
+      centerX = point.x
+      centerY = point.y
+      radius = 15
+    }
+  }
+
+  override val width: Double = 15
+  override val height: Double = 15
 }

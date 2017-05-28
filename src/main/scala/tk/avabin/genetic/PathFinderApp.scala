@@ -3,6 +3,7 @@ package tk.avabin.genetic
 import tk.avabin.genetic.ga.{Individual, Move, Point}
 
 import scala.collection.mutable.ArrayBuffer
+import scala.language.postfixOps
 import scala.util.Random
 import scalafx.animation.AnimationTimer
 import scalafx.application.JFXApp
@@ -20,7 +21,6 @@ import scalafx.scene.shape.Circle
   * @author avabin
   */
 object PathFinderApp extends JFXApp{
-  val circles = new ArrayBuffer[Circle]()
   val version = 0.1
   stage = new PrimaryStage {
     width = 875
@@ -47,28 +47,37 @@ object PathFinderApp extends JFXApp{
           val crossRateLabel: Label = new Label("Crossover rate (0.5)")
           val crossRateInput: TextField = new GenericTextField()
 
-          val targetLabel = new Label("Target coordinates (25, 25)")
+          val targetXInput = new GenericTextField(90)
+          val targetYInput = new GenericTextField(90)
+          val targetLabel = new Label("Target coordinates (125, 125)")
           val targetInputBox = new HBox() {
             alignment = Pos.BottomCenter
-            val xInput = new GenericTextField(60)
-            val yInput = new GenericTextField(60)
             children = Seq(
-              xInput,
-              yInput
+              targetXInput,
+              targetYInput
+            )
+          }
+
+
+          val startXInput = new GenericTextField(90)
+          val StartYInput = new GenericTextField(90)
+          val startLabel = new Label("Start point (0, 0)")
+          val startInputBox = new HBox() {
+            alignment = Pos.BottomCenter
+            children = Seq(
+              startXInput,
+              StartYInput
             )
           }
 
           val controlInputs = new HBox() {
-            val individual: Individual = new Individual(new Array[Move](0), new Point(100, 100), 50)
             alignment = Pos.BottomCenter
             val startB = new GenericButton(text = "Start")
             val pauseB = new GenericButton(text = "Pause")
             val stopB = new GenericButton(text = "Stop")
 
-            circles.append(Util.individual2circle(individual, 100))
-
             startB.onMouseClicked = (_) => {
-                individual.applyMove(new Move("01"))
+
               }
 
 
@@ -93,13 +102,14 @@ object PathFinderApp extends JFXApp{
             crossRateInput,
             targetLabel,
             targetInputBox,
+            startLabel,
+            startInputBox,
             controlInputs
           )
         }
           val canvas = new Canvas() {
-
             val gc: GraphicsContext = graphicsContext2D
-            val animationTimer: GAAnimationTimer = new GAAnimationTimer(circles, gc)
+            val animationTimer: GAAnimationTimer = new GAAnimationTimer()
             this.width = 650
             this.height = 650
             val centerX: Double = this.width() / 2
@@ -107,34 +117,8 @@ object PathFinderApp extends JFXApp{
             val random = new Random(System.nanoTime())
             val thisW: Double = this.width()
             val thisH: Double = this.height()
-
-            graphicsContext2D.setStroke(Color.DarkBlue)
-            graphicsContext2D.strokeLine(0, 0, 0, this.height())
-            graphicsContext2D.strokeLine(0, 0, this.width(), 0)
-            graphicsContext2D.lineWidth = 1
-            for(i <- 0 until (this.height().toInt / 25)) {
-              val x: Double = i*25
-              graphicsContext2D.strokeLine(0, this.height() - x, this.width(), this.height() - x)
-              graphicsContext2D.strokeLine(this.width() - x, 0, this.height() - x, this.height())
-            }
-
-
-            for (i <- 0 until 20) {
-              animationTimer.addCircle(new Circle(){
-                radius = 10
-                centerX = random.nextInt(thisW.toInt)
-                centerY = random.nextInt(thisH.toInt)
-                this.fill = Color.Red
-              })
-            }
-            animationTimer.addCircle(new Circle(){
-              radius = 25
-              centerX = 400
-              centerY = 100
-            })
+            Drawer gc = gc
             animationTimer.start()
-            Thread.sleep(2000)
-
           }
 
         add(controlBox, 0, 0)
