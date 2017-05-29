@@ -2,30 +2,25 @@ package tk.avabin.genetic
 
 import tk.avabin.genetic.ga._
 
-import scala.collection.mutable.ArrayBuffer
 import scala.language.postfixOps
 import scala.util.Random
-import scalafx.animation.AnimationTimer
 import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.canvas.{Canvas, GraphicsContext}
 import scalafx.scene.control.{Label, TextField}
-import scalafx.scene.effect.BoxBlur
-import scalafx.scene.layout.{GridPane, HBox, VBox}
-import scalafx.scene.paint.Color
-import scalafx.scene.shape.Circle
+import scalafx.scene.layout.{GridPane, HBox, StackPane, VBox}
 
 /**
   * @author avabin
   */
-object PathFinderApp extends JFXApp{
+object PathFinderApp extends JFXApp {
   var runnerTask: GARunnerTask = _
   val version = 0.1
   stage = new PrimaryStage {
     resizable = false
-    width = 875
+    width = 1075
     height = 705
     scene = new Scene() {
       title = s"PathFinder app $version"
@@ -33,9 +28,6 @@ object PathFinderApp extends JFXApp{
         padding = Insets(10)
         val controlBox = new VBox() {
           alignment = Pos.BottomCenter
-
-          val generationNumberLabel: Label = new Label("Number of generations (35)")
-          val generationNumberInput: TextField = new GenericTextField()
 
           val chromosomeSizeLabel: Label = new Label("Chromosome size (2000)")
           val chromosomeSizeInput: TextField = new GenericTextField()
@@ -79,41 +71,36 @@ object PathFinderApp extends JFXApp{
           }
 
           val controlInputs = new HBox() {
-            alignment = Pos.BottomCenter
+            alignment = Pos.TopCenter
             val startB = new GenericButton(text = "Start")
             val pauseB = new GenericButton(text = "Pause")
             val resetB = new GenericButton(text = "Reset")
 
             startB.onMouseClicked = (_) => {
-              var genSize = 40
               var chroSize = 2000
               var popSize = 120
-              var mutRate: Double = 5/chroSize
+              var mutRate: Double = 5 / chroSize
               var crossRate: Double = 0.5
               var targetX, targetY: Double = 300
               var startX, startY: Double = 0
               var obstacles = 8
               var d: Int = 3
 
-              generationNumberInput.text() match{
-                case "" =>
-                case other => genSize = other.toInt
-              }
-              chromosomeSizeInput.text() match{
+              chromosomeSizeInput.text() match {
                 case "" =>
                 case other => chroSize = other.toInt
               }
 
-              popSizeInput.text() match{
+              popSizeInput.text() match {
                 case "" =>
                 case other => popSize = other.toInt
               }
 
-              mutationRateInput.text() match{
+              mutationRateInput.text() match {
                 case "" =>
                 case other => mutRate = other.toDouble
               }
-              crossRateInput.text() match{
+              crossRateInput.text() match {
                 case "" =>
                 case other => crossRate = other.toDouble
               }
@@ -155,7 +142,6 @@ object PathFinderApp extends JFXApp{
                 delay = d
                 population = pop
                 eval = evaluator
-                generations = genSize
                 nOfObstacles = obstacles
               }
 
@@ -176,8 +162,6 @@ object PathFinderApp extends JFXApp{
 
 
           children = Seq(
-            generationNumberLabel,
-            generationNumberInput,
             chromosomeSizeLabel,
             chromosomeSizeInput,
             popSizeLabel,
@@ -197,6 +181,7 @@ object PathFinderApp extends JFXApp{
             controlInputs
           )
         }
+        val canvasPane = new StackPane() {
           val canvas = new Canvas() {
             val gc: GraphicsContext = graphicsContext2D
             val animationTimer: GAAnimationTimer = new GAAnimationTimer()
@@ -211,8 +196,31 @@ object PathFinderApp extends JFXApp{
             animationTimer.start()
           }
 
+          children = canvas
+        }
+
+        val genInfo: VBox = new VBox(5) {
+          this.minWidth = 200
+          padding = Insets(5, 10, 5, 10)
+          alignment = Pos.BaselineLeft
+          val genNumberLabel = new Label("Generation Number: 0")
+          val bestMoves = new Label("Best moves: ")
+          val bestDistance = new Label("Best distance: ")
+          val bestFitness = new Label("Best fitness: ")
+
+          children = Seq(
+            genNumberLabel,
+            bestMoves,
+            bestDistance,
+            bestFitness
+          )
+
+        }
+
+
         add(controlBox, 0, 0)
-        add(canvas, 1, 0, 2, 2)
+        add(canvasPane, 1, 0, 1, 2)
+        add(genInfo, 2, 0)
       }
     }
   }

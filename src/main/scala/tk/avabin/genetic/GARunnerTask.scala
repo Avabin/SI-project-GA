@@ -13,7 +13,6 @@ class GARunnerTask extends Thread {
   var delay = 0
   var population: Population = _
   var eval: Evaluator = _
-  var generations: Int = _
   var generation: Int = 1
   var solution: Individual = _
   var solutionFitness: Double = 0
@@ -61,6 +60,7 @@ class GARunnerTask extends Thread {
       fitness, moves - 1, fittest))
 
     population = population.evolve(elitist = true, eval)
+    generation += 1
 
   }
 
@@ -70,11 +70,7 @@ class GARunnerTask extends Thread {
     for (i <- 0 until nOfObstacles)
       colliders.append(ObstacleGenerator.next())
     colliders.append(eval.target)
-    while (generation <= generations) {
-      while (running) {
+      while (running)
         nextRound()
-        generation += 1
-      }
     }
-  }
 }
