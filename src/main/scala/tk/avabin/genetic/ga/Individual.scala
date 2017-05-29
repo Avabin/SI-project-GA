@@ -68,7 +68,7 @@ extends Drawable{
     this.point.xDec(distancePerMove)
   }
 
-  override val fillPaint: Paint = Color.DarkRed
+  override val fillPaint: Paint = Color.DarkGreen
   override val strokePaint: Paint = Color.Black
   override val shape: String = "rectangle"
 

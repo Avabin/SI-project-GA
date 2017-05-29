@@ -25,7 +25,7 @@ class Evaluator(val target: Target) {
   * Calculate an organism's fitness by comparing it to the optimal solution
   */
   def fitness(individual: Individual): Double = {
-    if(individual.isInTarget) return (1 / (Util.calculateDistance(individual.point, target.point) + individual.finalMoveIndex)) * 1.5
-    (1 / ((Util.calculateDistance(individual.point, target.point) * 1.3) + individual.finalMoveIndex)) * 0.1
+    if(individual.isInTarget) return 1 / (Util.calculateDistance(individual.point, target.point) + individual.finalMoveIndex) * 1.5
+    (1 / ((Util.calculateDistance(individual.point, target.point) * 1.7) + individual.finalMoveIndex)) * 0.2
   }
 }
