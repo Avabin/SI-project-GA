@@ -13,29 +13,37 @@ import scalafx.scene.paint.Color
 object Drawer {
   var gc: GraphicsContext = _
   var buffer: ArrayBuffer[Drawable] = new ArrayBuffer[Drawable]()
+  var persistentBuffer: ArrayBuffer[Drawable] = new ArrayBuffer[Drawable]()
 
   def addDrawable(drawable: Drawable): Unit = buffer.append(drawable)
+  def addPermDrawable(drawable: Drawable): Unit = persistentBuffer.append(drawable)
 
   def clearBuffer(): Unit = buffer = new ArrayBuffer[Drawable]()
+  def clearPermBuffer(): Unit = persistentBuffer = new ArrayBuffer[Drawable]()
 
   def clearCanvas(): Unit = {
     gc.clearRect(0, 0, gc.canvas.getWidth, gc.canvas.getHeight)
   }
 
   def drawAll(): Unit = {
+    persistentBuffer.foreach((d) => draw(d))
     buffer.foreach((d) => draw(d))
   }
 
   def draw(d: Drawable): Unit = {
     gc stroke = d.strokePaint
     gc fill = d.fillPaint
+    val x = d.x
+    val y = d.y
+    val w = d.width
+    val h = d.height
     d.shape match {
       case "circle" =>
-        gc.strokeOval(d.x, d.y, d.width, d.height)
-        gc.fillOval(d.x, d.y, d.width, d.height)
+        gc.strokeOval(x, y, w, h)
+        gc.fillOval(x, y, w, h)
       case "rectangle" =>
-        gc.strokeRect(d.x, d.y, d.width, d.height)
-        gc.fillRect(d.x, d.y, d.width, d.height)
+        gc.strokeRect(x, y, w, h)
+        gc.fillRect(x, y, w, h)
     }
   }
 

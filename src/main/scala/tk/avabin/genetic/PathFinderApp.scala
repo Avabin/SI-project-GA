@@ -2,6 +2,7 @@ package tk.avabin.genetic
 
 import tk.avabin.genetic.ga._
 
+import scala.collection.mutable.ArrayBuffer
 import scala.language.postfixOps
 import scala.util.Random
 import scalafx.application.JFXApp
@@ -9,7 +10,8 @@ import scalafx.application.JFXApp.PrimaryStage
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.canvas.{Canvas, GraphicsContext}
-import scalafx.scene.control.{Label, TextField}
+import scalafx.scene.control.{Button, Control, Label, TextField}
+import scalafx.scene.input.MouseButton
 import scalafx.scene.layout.{GridPane, HBox, StackPane, VBox}
 
 /**
@@ -26,6 +28,15 @@ object PathFinderApp extends JFXApp {
       title = s"PathFinder app $version"
       content = new GridPane() {
         padding = Insets(10)
+        val obstacleXInput = new GenericTextField(90)
+        val obstacleYInput = new GenericTextField(90)
+        val obstacleLabel = new Label("Obstacle size (100, 100)")
+
+        val gen: Label = new Label("Generation: ")
+        val solutionMoves: Label = new Label("Best moves: ")
+        val solFitness: Label = new Label("Best fitness: ")
+
+
         val controlBox = new VBox() {
           alignment = Pos.BottomCenter
 
@@ -44,29 +55,14 @@ object PathFinderApp extends JFXApp {
           val delayLabel: Label = new Label("Delay (3ms)")
           val delayInput: TextField = new GenericTextField()
 
-          val numOfObstaclesLabel: Label = new Label("Obstacles (8)")
-          val numOfObstaclesInput: TextField = new GenericTextField()
+          val clear: Button = new Button("Clear")
 
-          val targetXInput = new GenericTextField(90)
-          val targetYInput = new GenericTextField(90)
-          val targetLabel = new Label("Target coordinates (300, 300)")
-          val targetInputBox = new HBox() {
+
+          val obstacleInputBox = new HBox() {
             alignment = Pos.BottomCenter
             children = Seq(
-              targetXInput,
-              targetYInput
-            )
-          }
-
-
-          val startXInput = new GenericTextField(90)
-          val startYInput = new GenericTextField(90)
-          val startLabel = new Label("Start point (0, 0)")
-          val startInputBox = new HBox() {
-            alignment = Pos.BottomCenter
-            children = Seq(
-              startXInput,
-              startYInput
+              obstacleXInput,
+              obstacleYInput
             )
           }
 
@@ -74,7 +70,7 @@ object PathFinderApp extends JFXApp {
             alignment = Pos.TopCenter
             val startB = new GenericButton(text = "Start")
             val pauseB = new GenericButton(text = "Pause")
-            val resetB = new GenericButton(text = "Reset")
+            val resumeB = new GenericButton(text = "Resume")
 
             startB.onMouseClicked = (_) => {
               var chroSize = 2000
@@ -83,7 +79,6 @@ object PathFinderApp extends JFXApp {
               var crossRate: Double = 0.5
               var targetX, targetY: Double = 300
               var startX, startY: Double = 0
-              var obstacles = 8
               var d: Int = 3
 
               chromosomeSizeInput.text() match {
@@ -105,32 +100,9 @@ object PathFinderApp extends JFXApp {
                 case other => crossRate = other.toDouble
               }
 
-              targetXInput.text() match {
-                case "" =>
-                case other => targetX = other.toDouble
-              }
-
-              targetYInput.text() match {
-                case "" =>
-                case other => targetY = other.toDouble
-              }
-              startXInput.text() match {
-                case "" =>
-                case other => startX = other.toDouble
-              }
-              startYInput.text() match {
-                case "" =>
-                case other => startY = other.toDouble
-              }
-
               delayInput.text() match {
                 case "" =>
                 case other => d = other.toInt
-              }
-
-              numOfObstaclesInput.text() match {
-                case "" =>
-                case other => obstacles = other.toInt
               }
 
               var target: Target = new Target(targetX, targetY, 35)
@@ -142,9 +114,19 @@ object PathFinderApp extends JFXApp {
                 delay = d
                 population = pop
                 eval = evaluator
-                nOfObstacles = obstacles
               }
 
+              runnerTask.generation.onChange((_, _, nv) => {
+                gen.text = "Generation: %03d".format(nv.intValue())
+              })
+              runnerTask.solution.onChange((_,_,v) => {
+                solFitness.text = "Best fitness: %3.6f".format(runnerTask.solutionFitness)
+                var moves = v.finalMoveIndex
+                if (moves <= v.moveIndex) moves = v.moveIndex
+                solutionMoves.text = "Best moves: %04d".format(moves)
+              })
+
+              if(Drawer.persistentBuffer.isEmpty) Drawer.addPermDrawable(target)
               runnerTask.init()
               runnerTask.start()
             }
@@ -153,11 +135,20 @@ object PathFinderApp extends JFXApp {
               runnerTask.pause()
             }
 
+            resumeB.onMouseClicked = (_) => {
+              runnerTask.res()
+            }
+
             children = Seq(
               startB,
               pauseB,
-              resetB
+              resumeB
             )
+          }
+
+          clear.onMouseClicked = (_) => {
+            Drawer.clearBuffer()
+            Drawer.clearPermBuffer()
           }
 
 
@@ -172,12 +163,9 @@ object PathFinderApp extends JFXApp {
             crossRateInput,
             delayLabel,
             delayInput,
-            targetLabel,
-            targetInputBox,
-            startLabel,
-            startInputBox,
-            numOfObstaclesLabel,
-            numOfObstaclesInput,
+            obstacleLabel,
+            obstacleInputBox,
+            clear,
             controlInputs
           )
         }
@@ -189,9 +177,33 @@ object PathFinderApp extends JFXApp {
             this.height = 650
             val centerX: Double = this.width() / 2
             val centerY: Double = centerX
-            val random = new Random(System.nanoTime())
-            val thisW: Double = this.width()
-            val thisH: Double = this.height()
+            var obsW, obsH = 100.0
+
+
+            this.onMouseClicked = (event) => {
+              obstacleXInput.text() match {
+                case "" =>
+                case other => obsW = other.toDouble
+              }
+
+              obstacleYInput.text() match {
+                case "" =>
+                case other => obsH = other.toDouble
+              }
+
+
+              MouseButton(event.getButton) match {
+                case MouseButton.Primary =>
+                  val d = new Obstacle(event.getX, event.getY, obsW, obsH)
+                  Drawer.addPermDrawable(d)
+                case MouseButton.Secondary =>
+                  val d = new Target(event.getX, event.getSceneY)
+                  Drawer.addPermDrawable(d)
+                case MouseButton.Middle => println("Middle on ( %3.3f , %3.3f )".format(event.getX, event.getY))
+                case _ =>
+              }
+
+            }
             Drawer gc = gc
             animationTimer.start()
           }
@@ -203,16 +215,12 @@ object PathFinderApp extends JFXApp {
           this.minWidth = 200
           padding = Insets(5, 10, 5, 10)
           alignment = Pos.BaselineLeft
-          val genNumberLabel = new Label("Generation Number: 0")
-          val bestMoves = new Label("Best moves: ")
-          val bestDistance = new Label("Best distance: ")
-          val bestFitness = new Label("Best fitness: ")
+
 
           children = Seq(
-            genNumberLabel,
-            bestMoves,
-            bestDistance,
-            bestFitness
+            gen,
+            solutionMoves,
+            solFitness
           )
 
         }

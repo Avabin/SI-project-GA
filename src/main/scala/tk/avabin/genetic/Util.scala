@@ -1,6 +1,6 @@
 package tk.avabin.genetic
 
-import tk.avabin.genetic.ga.{Individual, Point, Target}
+import tk.avabin.genetic.ga.{Drawable, Individual, Point, Target}
 
 import scalafx.beans.property.DoubleProperty
 import scalafx.scene.shape.Circle
