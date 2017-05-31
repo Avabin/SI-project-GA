@@ -172,6 +172,7 @@ object PathFinderApp extends JFXApp {
               obstacleXInput.text() match {
                 case "" =>
                 case other => obsW = other.toDouble
+
               }
 
               obstacleYInput.text() match {
