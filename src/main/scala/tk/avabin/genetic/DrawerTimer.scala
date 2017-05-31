@@ -5,7 +5,7 @@ import javafx.animation.AnimationTimer
 /**
   * @author Avabin
   */
-class GAAnimationTimer() extends AnimationTimer {
+class DrawerTimer() extends AnimationTimer {
   override def handle(now: Long): Unit = {
     Drawer.clearCanvas()
     Drawer.drawCartesian(25)
