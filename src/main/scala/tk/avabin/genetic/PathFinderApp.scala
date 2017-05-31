@@ -7,6 +7,7 @@ import scala.language.postfixOps
 import scala.util.Random
 import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
+import scalafx.beans.property.IntegerProperty
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.canvas.{Canvas, GraphicsContext}
@@ -22,7 +23,7 @@ object PathFinderApp extends JFXApp {
   val version = 0.1
   stage = new PrimaryStage {
     resizable = false
-    width = 1075
+    width = 875
     height = 705
     scene = new Scene() {
       title = s"PathFinder app $version"
@@ -32,9 +33,7 @@ object PathFinderApp extends JFXApp {
         val obstacleYInput = new GenericTextField(90)
         val obstacleLabel = new Label("Obstacle size (100, 100)")
 
-        val gen: Label = new Label("Generation: ")
-        val solutionMoves: Label = new Label("Best moves: ")
-        val solFitness: Label = new Label("Best fitness: ")
+        val updateB: Button = new Button("Update delay")
 
 
         val controlBox = new VBox() {
@@ -70,7 +69,6 @@ object PathFinderApp extends JFXApp {
             alignment = Pos.TopCenter
             val startB = new GenericButton(text = "Start")
             val pauseB = new GenericButton(text = "Pause")
-            val resumeB = new GenericButton(text = "Resume")
 
             startB.onMouseClicked = (_) => {
               var chroSize = 2000
@@ -79,7 +77,7 @@ object PathFinderApp extends JFXApp {
               var crossRate: Double = 0.5
               var targetX, targetY: Double = 300
               var startX, startY: Double = 0
-              var d: Int = 3
+
 
               chromosomeSizeInput.text() match {
                 case "" =>
@@ -100,31 +98,18 @@ object PathFinderApp extends JFXApp {
                 case other => crossRate = other.toDouble
               }
 
-              delayInput.text() match {
-                case "" =>
-                case other => d = other.toInt
-              }
 
               var target: Target = new Target(targetX, targetY, 35)
               var start = new Point(startX, startY)
               var pop = new Population(popSize, chroSize, mutRate, crossRate, distancePerMove = 10, start.copy())
               var evaluator = new Evaluator(target)
 
+
+
               runnerTask = new GARunnerTask() {
-                delay = d
                 population = pop
                 eval = evaluator
               }
-
-              runnerTask.generation.onChange((_, _, nv) => {
-                gen.text = "Generation: %03d".format(nv.intValue())
-              })
-              runnerTask.solution.onChange((_,_,v) => {
-                solFitness.text = "Best fitness: %3.6f".format(runnerTask.solutionFitness)
-                var moves = v.finalMoveIndex
-                if (moves <= v.moveIndex) moves = v.moveIndex
-                solutionMoves.text = "Best moves: %04d".format(moves)
-              })
 
               if(Drawer.persistentBuffer.isEmpty) Drawer.addPermDrawable(target)
               runnerTask.init()
@@ -135,14 +120,16 @@ object PathFinderApp extends JFXApp {
               runnerTask.pause()
             }
 
-            resumeB.onMouseClicked = (_) => {
-              runnerTask.res()
+            updateB.onMouseClicked = (_) => {
+              delayInput.text() match {
+                case "" =>
+                case v => runnerTask.delay = v.toInt
+              }
             }
 
             children = Seq(
               startB,
-              pauseB,
-              resumeB
+              pauseB
             )
           }
 
@@ -166,13 +153,14 @@ object PathFinderApp extends JFXApp {
             obstacleLabel,
             obstacleInputBox,
             clear,
+            updateB,
             controlInputs
           )
         }
         val canvasPane = new StackPane() {
           val canvas = new Canvas() {
             val gc: GraphicsContext = graphicsContext2D
-            val animationTimer: GAAnimationTimer = new GAAnimationTimer()
+            val animationTimer: DrawerTimer = new DrawerTimer()
             this.width = 650
             this.height = 650
             val centerX: Double = this.width() / 2
@@ -211,24 +199,9 @@ object PathFinderApp extends JFXApp {
           children = canvas
         }
 
-        val genInfo: VBox = new VBox(5) {
-          this.minWidth = 200
-          padding = Insets(5, 10, 5, 10)
-          alignment = Pos.BaselineLeft
-
-
-          children = Seq(
-            gen,
-            solutionMoves,
-            solFitness
-          )
-
-        }
-
 
         add(controlBox, 0, 0)
         add(canvasPane, 1, 0, 1, 2)
-        add(genInfo, 2, 0)
       }
     }
   }

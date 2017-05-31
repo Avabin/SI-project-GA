@@ -10,11 +10,11 @@ import scalafx.beans.property.{DoubleProperty, IntegerProperty, ObjectProperty}
   * @author avabin
   */
 class GARunnerTask extends Thread {
-  var delay = 0
+  var delay: Int = 3
   var population: Population = _
   var eval: Evaluator = _
-  var generation: IntegerProperty = new IntegerProperty() {value = 1}
-  var solution: ObjectProperty[Individual] = new ObjectProperty[Individual]()
+  var generation: Int = 1
+  var solution: Individual = _
   var solutionFitness: Double = 0
   var colliders: ArrayBuffer[Drawable] = _
   var running = true
@@ -53,17 +53,17 @@ class GARunnerTask extends Thread {
 
     if (fitness > solutionFitness) {
       solutionFitness = fitness
-      solution() = fittest
+      solution = fittest
     }
     var moves = fittest.finalMoveIndex
     if (moves <= fittest.moveIndex) moves = fittest.moveIndex
 
-    println("generation: %4d | best distance %5.4f | fitness: %2.5f | moves: %5d | chromosome: %s ".format(generation(),
+    println("generation: %4d | best distance %5.4f | fitness: %2.5f | moves: %5d | chromosome: %s ".format(generation,
       Util.calculateDistance(fittest.point, eval.target.point),
       fitness, moves - 1, fittest))
 
     population = population.evolve(elitist = true, eval)
-    generation() += 1
+    generation += 1
 
   }
 
